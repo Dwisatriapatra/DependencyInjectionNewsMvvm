@@ -1,5 +1,7 @@
 package com.example.dependencyinjectionnewsmvvm.model
 
+import java.io.Serializable
+
 data class GetAllNewsResponseItem(
     val author: String,
     val createdAt: String,
@@ -7,7 +9,7 @@ data class GetAllNewsResponseItem(
     val id: String,
     val image: String,
     val title: String
-)
+) : Serializable
 
 
 //

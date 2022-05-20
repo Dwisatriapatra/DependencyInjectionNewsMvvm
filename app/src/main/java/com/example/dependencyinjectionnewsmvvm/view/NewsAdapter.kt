@@ -10,7 +10,7 @@ import com.example.dependencyinjectionnewsmvvm.R
 import com.example.dependencyinjectionnewsmvvm.model.GetAllNewsResponseItem
 import kotlinx.android.synthetic.main.item_news_adapter.view.*
 
-class NewsAdapter: RecyclerView.Adapter<NewsAdapter.ViewHolder>(){
+class NewsAdapter(private val onClick : (GetAllNewsResponseItem) -> Unit): RecyclerView.Adapter<NewsAdapter.ViewHolder>(){
     private var listNews : List<GetAllNewsResponseItem>? = null
 
     fun setListNews(list : List<GetAllNewsResponseItem>){
@@ -37,6 +37,9 @@ class NewsAdapter: RecyclerView.Adapter<NewsAdapter.ViewHolder>(){
                     .override(100, 100)
                     .into(card_image)
             }
+        }
+        holder.itemView.card.setOnClickListener {
+            onClick(listNews!![position])
         }
 
     }

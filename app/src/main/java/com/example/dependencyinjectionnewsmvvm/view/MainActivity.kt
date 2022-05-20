@@ -1,41 +1,43 @@
 package com.example.dependencyinjectionnewsmvvm.view
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dependencyinjectionnewsmvvm.R
-import com.example.dependencyinjectionnewsmvvm.networking.ApiNewsServices
-import com.example.dependencyinjectionnewsmvvm.repository.NewsRepository
 import com.example.dependencyinjectionnewsmvvm.viewmodel.NewsViewModel
-import com.example.dependencyinjectionnewsmvvm.viewmodel.NewsViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private lateinit var viewModel: NewsViewModel
     private lateinit var adapter : NewsAdapter
-    private val apiNewsServices = ApiNewsServices.getInstance()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initRecyclerView()
-        getNewsFromViewModel()
+
+
+        getDataNews()
     }
 
-    private fun initRecyclerView() {
-        rv_news.layoutManager = LinearLayoutManager(this)
-        adapter = NewsAdapter()
-        rv_news.adapter = adapter
-    }
-
-    private fun getNewsFromViewModel() {
-        viewModel = ViewModelProvider(this, NewsViewModelFactory(NewsRepository(apiNewsServices))
-        ).get(NewsViewModel::class.java)
-        viewModel.liveDataNews.observe(this){
-            adapter.setListNews(it)
-            adapter.notifyDataSetChanged()
+    fun getDataNews(){
+        adapter = NewsAdapter(){
+            val clickedNews = Bundle()
+            clickedNews.putSerializable("NEWS", it)
+            val intent = Intent(this, DetailActivity::class.java).putExtras(clickedNews)
+            startActivity(intent)
         }
-        viewModel.getAllNews()
+        rv_news.layoutManager = LinearLayoutManager(this)
+        rv_news.adapter = adapter
+
+        val viewModel = ViewModelProvider(this).get(
+            NewsViewModel::class.java
+        )
+        viewModel.news.observe(this){
+            if(it.isNotEmpty()){
+                adapter.setListNews(it)
+                adapter.notifyDataSetChanged()
+            }
+        }
     }
 }
